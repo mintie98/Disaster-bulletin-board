@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__) . '/function/db_connection.php';
+// require_once dirname(__FILE__) . '/function/db_connection.php';
 session_start();
 
 function login($user_name, $user_id, $password)
