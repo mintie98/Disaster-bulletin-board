@@ -1,4 +1,5 @@
 <?php
+require_once 'function.php';
 $a = true;
 ?>
 
@@ -42,17 +43,16 @@ $a = true;
       if ($a) {
       ?>
         <div style="width:75%; height:20vh" class="row p-0 m-0 mt-3">
-          <div class="col btn btn-danger text-white d-flex align-items-center justify-content-center" onclick="location.href='./arrival_admin.php?title=HOME'">
+          <div class="col btn btn-danger text-white d-flex align-items-center justify-content-center" onclick="location.href='./arrival_admin.php'">
             <div class="h1 m-0">出社状況</div>
           </div>
-          <div class="col btn btn-danger text-white ms-3 d-flex align-items-center justify-content-center" onclick="location.href='./post.html'">
+          <div class="col btn btn-danger text-white ms-3 d-flex align-items-center justify-content-center" onclick="location.href='./safety_admin.php'">
             <div class="h1 m-0">安否状況</div>
           </div>
         </div>
       <?php
       }
       ?>
-
     </div>
   </main>
   <footer style="height: 5vh;" class="fixed-bottom bg-secondary">

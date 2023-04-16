@@ -20,7 +20,7 @@ $title = new Title;
 <body>
     <header>
         <?php
-        $title->setTitle("出社状況");
+        $title->setTitle("安否状況");
         include "navbar_admin.php";
         ?>
     </header>

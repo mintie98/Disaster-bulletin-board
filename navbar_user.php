@@ -6,7 +6,7 @@
   </button>
   <div class="collapse navbar-collapse" id="navbar-content">
     <ul class="navbar-nav">
-      <li class="nav-item">sekai</li>
+      <li class="nav-item"></li>
     </ul>
   </div>
 </nav>
