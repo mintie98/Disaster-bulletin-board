@@ -1,32 +1,19 @@
 <?php
-// require_once dirname(__FILE__) . '/function/db_connection.php';
-session_start();
+if (isset($_POST['send'])) {
+  $user_id = $_POST['user_id'];
+  $name = $_POST['name'];
+  $user_id = $_POST['password'];
+  $password = $_POST['password_conf'];
 
-function login($user_name, $user_id, $password)
-{
-  header('Location: board_home.php');
-}
-
-if (isset($_COOKIE['login_check'])) {
-  // 前回のログイン時ログインチェックONの場合
-  header('Location: board_home.php');
-  exit();
-} else {
-  // 前回のログイン時ログインチェックOFFの場合
-  if (isset($_POST['login'])) {
-    $name = $_POST['name'];
-    $user_id = $_POST['password'];
-    $password = $_POST['password_conf'];
-
-    login($user_name, $user_id, $password);
-    // 現在のログイン時ログインチェックONの場合 function loginへ
-    if (isset($_POST['login_check'])) {
-      setcookie('login_check', $_POST['login_check']);
-    }
+  if ($company_id != 123) {
+    echo "<div class='alert alert-warning'>社員IDが違います</div>";
+  }
+  if ($password != $password_conf) {
+    echo "<div class='alert alert-warning'>パスワードが一致しません</div>";
   }
 }
-
 ?>
+
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -38,12 +25,24 @@ if (isset($_COOKIE['login_check'])) {
 </head>
 
 <body>
-
   <main class="container">
     <div class="row justify-content-center">
       <div class="col-md-6">
-        <h1 class="text-center my-3">ログイン</h1>
+        <h1 class="text-center my-4 mt-5">アカウント作成</h1>
         <form action="" method="post">
+          <div>
+            <!-- <select style="background-color: #f7ffc6" class="form-select mb-3" name="department" required>
+              <option hidden>部署を選択してください</option>
+              <option value="部署１">部署１</option>
+              <option value="部署２">部署２</option>
+            </select> -->
+          </div>
+          <div>
+            <!-- <input style="background-color: #f7ffc6;" type="text" name="company_id" class="form-control mb-3" placeholder="社員ID" required /> -->
+          </div>
+          <div>
+            <input style="background-color: #f7ffc6;" type="text" name="user_id" class="form-control form-control-lg my-4" placeholder="id" required />
+          </div>
           <div>
             <input style="background-color: #f7ffc6;" type="text" name="name" class="form-control form-control-lg my-4" placeholder="ユーザー名" required />
           </div>
@@ -53,13 +52,9 @@ if (isset($_COOKIE['login_check'])) {
           <div>
             <input style="background-color: #f7ffc6;" type="password" name="password_conf" class="form-control form-control-lg my-4" placeholder="パスワード確認" required />
           </div>
-          <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" name="login_check" value="1" checked />
-            <label class="form-check-label mb-3" for="login_check"> ログイン状態を維持する </label>
-          </div>
-          <button class="btn btn-primary btn-lg w-100" type="submit" name="login">ログイン</button>
-          <!-- <button class="btn-info rounded-pill">themecolor</button> -->
+          <button class="btn btn-primary btn-lg w-100 my-4" type="submit" name="send">アカウント作成</button>
         </form>
+        <div class="mt-3 text-center"><a href="login.php">ログイン</a></div>
       </div>
     </div>
   </main>
