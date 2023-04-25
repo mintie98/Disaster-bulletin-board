@@ -19,7 +19,7 @@ if (isset($_COOKIE['login_check'])) {
 } else {
   // 前回のログイン時ログインチェックOFFの場合
   if (isset($_POST['login'])) {
-    $name = $_POST['name'];
+    $name = $_POST['user_id'];
     $password = $_POST['password'];
     $password_conf = $_POST['password_conf'];
 
@@ -48,30 +48,33 @@ if (isset($_COOKIE['login_check'])) {
         <h1 class="text-center my-3">ログイン</h1>
         <form action="" method="post">
           <div class="form-floating">
-            <input type="text" name="name" id="user_name" class="border-0 form-control form-control-lg my-4" placeholder="名前" required />
-            <label for="user_name">名前</label>
+            <input type="number" name="id" id="user_id" class="border-0 form-control form-control-lg my-4" placeholder="ID" required />
+            <label class="text-muted" for="user_name">ID</label>
           </div>
           <div class="form-floating position-relative">
             <input type="password" name="password" id="password" class="form-control form-control-lg my-4" placeholder="パスワード" required />
             <i class="position-absolute top-50 end-0 translate-middle-y fa fa-eye pe-3" id="password_eye"></i>
-            <label for="password">パスワード</label>
+            <label class="text-muted" for="password">パスワード</label>
           </div>
-          <div class="form-floating">
+          <!-- <div class="form-floating">
             <input type="password" name="password_conf" id="password_conf" class="form-control form-control-lg my-4" placeholder="パスワード確認" required />
             <i class="position-absolute top-50 end-0 translate-middle-y fa fa-eye pe-3" id="password_conf_eye"></i>
             <label for="password_conf">パスワード確認</label>
-          </div>
-          <div class="form-check mb-2">
+          </div> -->
+          <div class="col form-check mb-2">
             <input class="form-check-input" type="checkbox" name="login_check" value="1" checked />
-            <label class="form-check-label mb-3" for="login_check"> ログイン状態を維持する </label>
+            <label class="form-check-label mb-3" for="login_check">ログイン状態を維持</label>
           </div>
           <button class="btn btn-primary btn-lg w-100" type="submit" name="login">ログイン</button>
+          <div class="mt-2 d-flex justify-content-end"><a href="login_famiry.php">家族用アカウント</a></div>
           <!-- <button class="btn-info rounded-pill">themecolor</button> -->
         </form>
       </div>
     </div>
   </main>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
   <script>
     const password_eye = document.querySelector('#password_eye');
     password_eye.addEventListener('click', () => {
@@ -87,19 +90,19 @@ if (isset($_COOKIE['login_check'])) {
       }
     });
 
-    const password_conf_eye = document.querySelector('#password_conf_eye');
-    password_conf_eye.addEventListener('click', () => {
-      const password_conf = document.querySelector('#password_conf');
-      if (password_conf.type === 'password') {
-        password_conf.type = 'text';
-        password_conf_eye.classList.remove('fa-eye');
-        password_conf_eye.classList.add('fa-eye-slash');
-      } else {
-        password_conf.type = 'password';
-        password_conf_eye.classList.remove('fa-eye-slash');
-        password_conf_eye.classList.add('fa-eye');
-      }
-    });
+    // const password_conf_eye = document.querySelector('#password_conf_eye');
+    // password_conf_eye.addEventListener('click', () => {
+    //   const password_conf = document.querySelector('#password_conf');
+    //   if (password_conf.type === 'password') {
+    //     password_conf.type = 'text';
+    //     password_conf_eye.classList.remove('fa-eye');
+    //     password_conf_eye.classList.add('fa-eye-slash');
+    //   } else {
+    //     password_conf.type = 'password';
+    //     password_conf_eye.classList.remove('fa-eye-slash');
+    //     password_conf_eye.classList.add('fa-eye');
+    //   }
+    // });
   </script>
 </body>
 
