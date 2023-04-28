@@ -1,30 +1,60 @@
 <?php
-// require_once dirname(__FILE__) . '/function/db_connection.php';
 session_start();
+// require_once dirname(__FILE__) . '/function/db_connection.php';
+// セッション開始
+//ログイン認証
+if (isset($_SESSION['pass_save'])) {
 
-function login($user_name, $user_id, $password, $password_conf)
-{
-  if (isset($_POST['send'])) {
-    if ($password != $password_conf) {
-      echo "<div class='alert alert-warning'>パスワードが一致しません</div>";
-    }
+  //ログイン維持状態の時ログインページへ飛ぼうとしている
+  if (basename($_SERVER['PHP_SELF']) === 'login.php') {
+    header("Location:/bord/board_home.php");
   }
-  header('Location: board_home.php');
+} else {
+  //ログインページ以外へ飛ぼうとしているときにログインページへ遷移させる
+  if (basename($_SERVER['PHP_SELF']) !== 'login.php') {
+    header("Location:login.php");
+  }
+}
+if (isset($_POST['login_btn'])) {
+  $user_id = $_POST['user_id'];
+  $password = $_POST['password'];
+  $pass_save = (($_POST['pass_save'] == "true") ? true : false);
+
+  login($user_id, $password, $pass_save);
 }
 
-if (isset($_COOKIE['login_check'])) {
-  // 前回のログイン時ログインチェックONの場合
-  header('Location: board_home.php');
-  exit();
-} else {
-  // 前回のログイン時ログインチェックOFFの場合
-  if (isset($_POST['login'])) {
-    $name = $_POST['user_id'];
-    $password = $_POST['password'];
-    $password_conf = $_POST['password_conf'];
+/*
+db処理の仮置きあり
+*/
+function login($user_id, $password, $pass_save)
+{
+  //   // db情報取得
+  //   $conn = connection();
+  //   // // ユーザーIDからユーザー情報を取得
+  //   $sql = "SELECT * FROM accounts WHERE user_id = '$user_id'";
 
-    login($user_name, $user_id, $password, $password_conf);
+  //   if ($result = $conn->query($sql)) {
+  //     //check username
+  //     if ($result->num_rows >= 1) {
+  //       $user = $result->fetch_assoc();
+  //       //check password
+  //       if (password_verify($password, $user['password'])) {
+  //         // user_idをセッションに保存
+  //         // $_SESSION['user_id'] = $user_id;
+
+  //         //ログイン保持の有無の確認
+  if ($pass_save) {
+    //ログイン保持する
+    $_SESSION['pass_save'] = true;
   }
+  header("location: board_home.php");
+  //       } else {
+  //         echo "<div class="bg-yellow-300 border border-yellow-500 text-yellow-900 p-4 mt-4" role="alert">パスワードが一致しません</div>";
+  //       }
+  //     }
+  //   } else {
+  //     echo "<div class='alert alert-warning'>ユーザーIDが一致しません</div>";
+  //   }
 }
 
 ?>
@@ -35,75 +65,62 @@ if (isset($_COOKIE['login_check'])) {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>login</title>
-  <!-- bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous" />
+  <!-- tailwind css -->
+  <link href="./css/output.css" rel="stylesheet">
   <!-- icon -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
-<body style="--bs-bg-opacity: .25;" class="bg-warning">
-  <main class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <h1 class="text-center my-3">ログイン</h1>
-        <form action="" method="post">
-          <div class="form-floating">
-            <input type="number" name="id" id="user_id" class="border-0 form-control form-control-lg my-4" placeholder="ID" required />
-            <label class="text-muted" for="user_name">ID</label>
-          </div>
-          <div class="form-floating position-relative">
-            <input type="password" name="password" id="password" class="form-control form-control-lg my-4" placeholder="パスワード" required />
-            <i class="position-absolute top-50 end-0 translate-middle-y fa fa-eye pe-3" id="password_eye"></i>
-            <label class="text-muted" for="password">パスワード</label>
-          </div>
-          <!-- <div class="form-floating">
-            <input type="password" name="password_conf" id="password_conf" class="form-control form-control-lg my-4" placeholder="パスワード確認" required />
-            <i class="position-absolute top-50 end-0 translate-middle-y fa fa-eye pe-3" id="password_conf_eye"></i>
-            <label for="password_conf">パスワード確認</label>
-          </div> -->
-          <div class="col form-check mb-2">
-            <input class="form-check-input" type="checkbox" name="login_check" value="1" checked />
-            <label class="form-check-label mb-3" for="login_check">ログイン状態を維持</label>
-          </div>
-          <button class="btn btn-primary btn-lg w-100" type="submit" name="login">ログイン</button>
-          <div class="mt-2 d-flex justify-content-end"><a href="login_famiry.php">家族用アカウント</a></div>
-          <!-- <button class="btn-info rounded-pill">themecolor</button> -->
-        </form>
+<body class="bg-gray-200 h-screen flex items-center">
+  <main class="container mx-auto">
+    <div class="bg-white flex-row justify-center border border-gray-200 rounded-2xl p-5 mt-10 m-5 shadow-lg">
+      <h1 class="font-body text-center justify-center my-4 text-4xl">ログイン</h1>
+      <div class="mt-6">
+        <!-- ログインフォーム -->
+        <div><!--TODO 要素の横幅-->
+          <form action="" method="post">
+            <!-- ID -->
+            <div class="relative mb-5 mx-auto md:w-3/4">
+              <input type="number" name="user_id" id="user_id" class="block p-4 w-full h-16 text-lg text-black rounded-lg border-2 bg-white focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+              <label for="user_id" class="absolute text-sm text-gray-500 duration-300 transform -translate-y-2 scale-75 top-2 z-10 origin-[0] px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-2 left-1">ID</label>
+            </div>
+            <!-- パスワード -->
+            <div class="relative mb-5 mx-auto md:w-3/4">
+              <input type="password" id="password" name="password" class="block p-4 w-full h-16 text-lg text-black rounded-lg border-2 bg-white focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+              <label for=" password" class="absolute text-sm text-gray-500 duration-300 transform -translate-y-2 scale-75 top-2 z-10 origin-[0] px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-2 left-1">パスワード</label>
+              <div class="absolute inset-y-0 right-1 flex my-2 items-center">
+                <i class="text-right fa fa-eye pr-3" id="password_eye"></i>
+              </div>
+            </div>
+            <div class="relative mb-5 mx-auto md:w-3/4">
+              <input type="checkbox" name="pass_save" id="pass_save" value="true">
+              <label for="pass_save">ログイン状態を維持</label>
+            </div>
+            <div class="relative mb-5 mx-auto md:w-3/4">
+              <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded" type="submit" name="login_btn" onclick="location.href='./login.php'">ログイン</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-
   <script>
-    const password_eye = document.querySelector('#password_eye');
+    const password_eye = document.querySelector('#password_eye')
     password_eye.addEventListener('click', () => {
-      const password = document.querySelector('#password');
+      const password = document.querySelector('#password')
       if (password.type === 'password') {
-        password.type = 'text';
-        password_eye.classList.remove('fa-eye');
-        password_eye.classList.add('fa-eye-slash');
+        password.type = 'text'
+        password_eye.classList.remove('fa-eye')
+        password_eye.classList.add('fa-eye-slash')
       } else {
-        password.type = 'password';
-        password_eye.classList.remove('fa-eye-slash');
-        password_eye.classList.add('fa-eye');
+        password.type = 'password'
+        password_eye.classList.remove('fa-eye-slash')
+        password_eye.classList.add('fa-eye')
       }
-    });
-
-    // const password_conf_eye = document.querySelector('#password_conf_eye');
-    // password_conf_eye.addEventListener('click', () => {
-    //   const password_conf = document.querySelector('#password_conf');
-    //   if (password_conf.type === 'password') {
-    //     password_conf.type = 'text';
-    //     password_conf_eye.classList.remove('fa-eye');
-    //     password_conf_eye.classList.add('fa-eye-slash');
-    //   } else {
-    //     password_conf.type = 'password';
-    //     password_conf_eye.classList.remove('fa-eye-slash');
-    //     password_conf_eye.classList.add('fa-eye');
-    //   }
-    // });
+    })
   </script>
+
 </body>
 
 </html>
