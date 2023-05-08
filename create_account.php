@@ -1,3 +1,59 @@
+
+<?php
+// データを保存
+require_once "define.php";
+session_start();
+$_SESSION["error"] = "";
+
+// フォームの送信を待機する
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  // 入力されたデータを処理する
+  $userid = $_POST["user_id"];
+  $username = $_POST["name"];
+  $gender = $_POST["gender"];
+  $telephone = $_POST["tel"];
+  $address = $_POST["address"];
+  $mail = $_POST["mail"];
+  $mgr = $_POST["mgr"];
+  $password = $_POST["password"];
+  $password_conf = $_POST["password_conf"];
+
+ // データベースに接続
+  $options = [
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES => false,
+    ];
+  $db = new PDO("mysql:host=localhost;dbname=day_service;charset=utf8mb4", "usertest", "test",$options);
+
+  // Password Check
+  if ($password != $password_conf) {
+    $message = "パスワードが一致しません。もう一度入力してください。";
+    exit;
+  } else {
+    // データベースに同じID or emailが存在しないことを確認する
+    $stmt = $db->prepare("SELECT COUNT(*) FROM user WHERE user_id = ? OR user_mail = ?");
+    $stmt->execute([$userid, $mail]);
+    $count = $stmt->fetchColumn();
+
+    if ($count > 0) {
+      $message = "ユーザーIDまたはメールアドレスが既に使用されています。別のユーザーIDまたはメールアドレスを使用してください。";
+    } else {
+      // Hash password
+      $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+      // $db->beginTransaction();
+      // データベースにユーザー情報を登録する
+      $stmt = $db->prepare("INSERT INTO user (USER_ID, USER_NAME,USER_GENDER, USER_PASS, USER_TEL, USER_ADDRESS, USER_MAIL,USER_MGR) VALUES (?,?,?,?,?,?,?,?)");
+    $stmt->execute([ $userid,$username,$gender,$hashed_password,$telephone,$address,$mail,$mgr ]);
+    $db->commit();
+      // 登録が完了したら、ログインページにリダイレクトする
+      header("Location: login.php");
+      exit;
+    }
+  }
+}
+?>
+
 <?php
 if (isset($_POST['send'])) {
   $user_id = $_POST['user_id'];
@@ -40,7 +96,7 @@ if (isset($_POST['send'])) {
           </div>
           <!-- name -->
           <div class="relative mb-5 m-5 md:w-3/4">
-            <input type="number" name="name" id="name" class="block p-4 w-full h-16 text-lg text-black rounded-lg border-2 bg-white focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+            <input type="text" name="name" id="name" class="block p-4 w-full h-16 text-lg text-black rounded-lg border-2 bg-white focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
             <label for="name" class="absolute text-sm text-gray-500 duration-300 transform -translate-y-2 scale-75 top-2 z-10 origin-[0] px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-2 left-1">名前</label>
           </div>
           <!-- 性別 -->
@@ -67,6 +123,11 @@ if (isset($_POST['send'])) {
             <input type="text" name="address" id="address" class="block p-4 w-full h-16 text-lg text-black rounded-lg border-2 bg-white focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
             <label for="address" class="absolute text-sm text-gray-500 duration-300 transform -translate-y-2 scale-75 top-2 z-10 origin-[0] px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-2 left-1">住所</label>
           </div>
+          <!-- mail -->
+          <div class="relative mb-5 m-5 md:w-3/4">
+            <input type="email" name="mail" id="mail" class="block p-4 w-full h-16 text-lg text-black rounded-lg border-2 bg-white focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+            <label for="mail" class="absolute text-sm text-gray-500 duration-300 transform -translate-y-2 scale-75 top-2 z-10 origin-[0] px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-2 left-1">メール</label>
+          </div>
           <!-- mgr -->
           <div class="relative mb-5 m-5 md:w-3/4">
             <input type="text" name="mgr" id="mgr" class="block p-4 w-full h-16 text-lg text-black rounded-lg border-2 bg-white focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
@@ -76,6 +137,11 @@ if (isset($_POST['send'])) {
           <div class="relative mb-5 m-5 md:w-3/4">
             <input type="password" name="password" id="password" class="block p-4 w-full h-16 text-lg text-black rounded-lg border-2 bg-white focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
             <label for="password" class="absolute text-sm text-gray-500 duration-300 transform -translate-y-2 scale-75 top-2 z-10 origin-[0] px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-2 left-1">パスワード</label>
+          </div>
+          <!-- password_conf -->
+          <div class="relative mb-5 m-5 md:w-3/4">
+            <input type="password" name="password_conf" id="password_conf" class="block p-4 w-full h-16 text-lg text-black rounded-lg border-2 bg-white focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+            <label for="password_conf" class="absolute text-sm text-gray-500 duration-300 transform -translate-y-2 scale-75 top-2 z-10 origin-[0] px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-2 left-1">パスワード確認</label>
           </div>
           <!-- 送信ボタン -->
           <div class="flex justify-center">
